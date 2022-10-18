@@ -30,7 +30,6 @@ def consume_all(ch,method,properties,body):
 
     # prepare balasan
     objChat = Message(chat['to'],str(result),chat['id'])
-    print(objChat.toJSON())
     connReply = pika.BlockingConnection(parameters = parameters)
     chanReply = connReply.channel()
     chanReply.exchange_declare(exchange='satusehat_exchange',exchange_type='direct',durable=True)

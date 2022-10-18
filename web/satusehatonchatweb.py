@@ -69,6 +69,7 @@ def broadcast(segmen,message):
         chanReply.queue_bind(exchange='satusehat_exchange',queue='satusehat_chat_queue',routing_key='satusehat_chat_route')
         chanReply.basic_publish(exchange='satusehat_exchange',routing_key='satusehat_chat_route',body=objChat.toJSON())
         connReply.close()
+        print(objChat.toJSON())
         res.append({'contact':row[0],'message': message})
     conn.close()
     return res

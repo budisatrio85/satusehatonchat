@@ -1,5 +1,5 @@
 const fs = require('fs');
-const { Client, Location, List, Buttons,LocalAuth } = require('whatsapp-web.js');
+const { Client, Location, List, Buttons,LocalAuth, MessageMedia } = require('whatsapp-web.js');
 const qrcode = require('qrcode-terminal');
 const Queue = require('bull');
 const amqplib = require('amqplib');
@@ -12,6 +12,8 @@ const qrCode = require('qrcode-reader');
 const clientWA = new Client({ authStrategy: new LocalAuth({clientId: 'budi2'}), puppeteer: { headless: true } });
 const rabbitUrl = 'amqp://satusehat:satusehat@localhost:5672';
 const exch = 'satusehat_exchange';
+const path = 'D:\\SOURCE\\Hackathon\\FHH2022\\satusehatonchat\\'
+
 var db;
 new sqlite3.Database('./satusehat.db', sqlite3.OPEN_READWRITE, (err) => {
     if (err && err.code == "SQLITE_CANTOPEN") {
@@ -156,8 +158,11 @@ clientWA.on('message', async msg => {
         reply = `Hai ${msg._data.notifyName}, selamat datang di Satu Sehat on Chat!`
         clientWA.sendMessage(msg.from,reply,{quotedMessageId:msg.id._serialized});
 
-    } else if (msg.body.startsWith('ss')) {
-        
+    } else if (msg.body.toLowerCase().includes('cek data')) {    
+        var imageAsBase64 = fs.readFileSync(path + "rontgen.jpg", 'base64');
+        var media = await new MessageMedia("image/jpg", imageAsBase64, "rontgen.jpg")
+        clientWA.sendMessage(msg.from, media, {caption: "Berikut data rontgen Anda"})
+    } else if (msg.body.startsWith('ss')) {        
         publishChat(msg.from,msg.body.substring(2,msg.body.length),msg.id._serialized)
     } else if (msg.body.toLowerCase().includes('antri')) {
         reply = `Hai ${msg._data.notifyName}, terima kasih telah menggunakan Satu Sehat on Chat! Layanan antri digunakan pada hari H yaa. Kalau boleh tahu dimana Anda akan antri? `
@@ -225,7 +230,7 @@ clientWA.on('message', async msg => {
                     }
                     result = `
                     Terima kasih anda telah *${jenis}*
-                    Lokasi: 'Demo Mall Peduli Lindungi' 
+                    Lokasi: 'Demo Lokasi' 
                     Tanggal: ${new Date().toLocaleString('en-GB')}
 
                     (${value.result})
